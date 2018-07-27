@@ -46,9 +46,12 @@ export default class Task extends Component {
             <div>
                 <div>{this.props.title} by {this.props.date.toLowerCase()}</div>
                 <div>Importance level: {this.showImportanceLevel(this.state.importance)}</div>
+                <div>{this.props.isDone ? "Complete" : "Not complete"}</div>
                 <button onClick={this.increaseImportance}>+</button>
                 <button onClick={this.decreaseImportance}>-</button>
                 <br/>
+                <br/>
+                
             </div>
         )
     }

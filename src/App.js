@@ -8,22 +8,30 @@ class App extends Component {
       title: '',
       date: '',
       description: '',
+      importance: '',
       tasks: [
-        {title: 'Learn React', date: 'Tomorrow', importance: 2},
-        {title: 'Learn Firebase', date: '2 days', importance: 1},
-        {title: 'Kiss Chipi', date: 'today', importance: 0}
+        {id: '1234', title: 'Learn React', date: 'Tomorrow', importance: 2, isDone: true},
+        {id: '12345', title: 'Learn Firebase', date: '2 days', importance: 1, isDone: false},
+        {id: '123456', title: 'Kiss Chipi', date: 'today', importance: 0, isDone: true}
+      ],
+      visibleTasks: [
+        {id: '1234', title: 'Learn React', date: 'Tomorrow', importance: 2, isDone: true},
+        {id: '12345', title: 'Learn Firebase', date: '2 days', importance: 1, isDone: false},
+        {id: '123456', title: 'Kiss Chipi', date: 'today', importance: 0, isDone: true}
       ]
     }
   }
 
   renderTaskList = () => {
-    let tasks = this.state.tasks.concat(); // Array of tasks
+    let tasks = this.state.visibleTasks.concat(); // Array of tasks
     
     let taskComponents = tasks.map(item =>
         <Task
+            key={item.id}
             title={item.title}
             date={item.date}
             importance={item.importance}
+            isDone={item.isDone}
           />
     ) // Array of components
 
@@ -36,10 +44,63 @@ class App extends Component {
     })
   }
 
+  addTask = (e) => {
+    e.preventDefault();
+    
+    let tasks = this.state.tasks.concat();
+    let newTask = {
+      title: this.state.title,
+      date: this.state.date,
+      importance: this.state.importance || 0,
+      isDone: false
+    }
+    tasks.push(newTask);
+    
+    this.setState({
+      tasks: tasks,
+      visibleTasks: tasks
+    })
+  
+  }
+
+  showComplete = () => {
+    let tasks = this.state.tasks.concat();
+    let filteredTasks = tasks.filter(item => item.isDone);
+
+    this.setState({
+      visibleTasks: filteredTasks
+    })
+  }
+
+  showUncomplete = () => {
+    let tasks = this.state.tasks.concat();
+    let filteredTasks = tasks.filter(item => item.isDone === false);
+
+    this.setState({
+      visibleTasks: filteredTasks
+    })
+   
+  }
+  showAll = () => {
+    this.setState({
+      visibleTasks: this.state.tasks.concat()
+    })
+  }
   render() {
     return (
       <div className="App">
       
+      <br/>
+      <br/>
+      <br/>      
+
+      <button onClick={this.showComplete}>Show complete tasks</button>
+      <button onClick={this.showUncomplete}>Show uncomplete tasks</button>
+      <button onClick={this.showAll}>Show all</button>
+            
+      <br/>
+      <br/>      
+            
       <form>
         Title
         <input
@@ -57,14 +118,14 @@ class App extends Component {
           name="date"
           onChange={this.handleInputChange}/>
         
-        Description
+        Importance
           <input
           type="text"
-          value={this.state.description}
-          name="description"
+          value={this.state.importance}
+          name="importance"
           onChange={this.handleInputChange}/>
          
-        <button>Add Task</button>    
+        <button onClick={this.addTask}>Add Task</button>    
       </form>
 
       <br/>
