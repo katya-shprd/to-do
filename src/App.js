@@ -11,12 +11,8 @@ class App extends Component {
       date: '',
       description: '',
       importance: '',
-      tasks: [
-        
-      ],
-      visibleTasks: [
-        
-      ]
+      tasks: [],
+      visibleTasks: []
     }
   }
 
@@ -25,8 +21,12 @@ class App extends Component {
     fb.database().ref('/tasks').on('value', (data) => {
         console.log(data.toJSON())
       let tasks = data.toJSON(); // Object with tasks from Firebase
-      let tasksArr = Object.values(tasks);
-      this.setState({tasks: tasksArr, visibleTasks: tasksArr})
+      if (tasks !== null) {
+        let tasksArr = Object.values(tasks).reverse();
+        this.setState({tasks: tasksArr, visibleTasks: tasksArr}, () => {
+          this.showUncomplete()
+        })
+      }
       // Now tasks are saved as an OBJECT and can be used in the app
     })
   }
@@ -36,7 +36,7 @@ class App extends Component {
     
     let taskComponents = tasks.map(item =>
         <Task
-            key={item.id}
+            key={item._id}
             id={item._id}            
             title={item.title}
             date={item.date}
@@ -64,11 +64,17 @@ class App extends Component {
       _id: pushId,
       title: this.state.title,
       date: this.state.date,
-      importance: this.state.importance || 0,
+      importance: parseInt(this.state.importance),
       isDone: false
     }
 
     ref.set(newTask)
+
+    this.setState({
+      title: '',
+      date: '',
+      importance: ''
+    })
   
   }
 
