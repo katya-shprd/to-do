@@ -17,35 +17,20 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // Retrieves tasks from Firebase as an object
+    this.getTasksFromDatabase()
+  }
+
+  getTasksFromDatabase = () => {
     fb.database().ref('/tasks').on('value', (data) => {
-        console.log(data.toJSON())
       let tasks = data.toJSON(); // Object with tasks from Firebase
       if (tasks !== null) {
         let tasksArr = Object.values(tasks).reverse();
         this.setState({tasks: tasksArr, visibleTasks: tasksArr}, () => {
-          this.showUncomplete()
+          this.filterTasks('UNCOMPLETE')
         })
       }
       // Now tasks are saved as an OBJECT and can be used in the app
     })
-  }
-
-  renderTaskList = () => {
-    let tasks = this.state.visibleTasks.concat(); // Array of tasks
-    
-    let taskComponents = tasks.map(item =>
-        <Task
-            key={item._id}
-            id={item._id}            
-            title={item.title}
-            date={item.date}
-            importance={item.importance}
-            isDone={item.isDone}
-          />
-    ) // Array of components
-
-    return taskComponents;
   }
 
   handleInputChange = (e) => {
@@ -78,29 +63,19 @@ class App extends Component {
   
   }
 
-  showComplete = () => {
-    let tasks = this.state.tasks.concat();
-    let filteredTasks = tasks.filter(item => item.isDone);
-
-    this.setState({
-      visibleTasks: filteredTasks
-    })
+  filterTasks = (filter) => {
+    switch(filter) {
+      case 'ALL':
+        this.setState({visibleTasks: this.state.tasks});
+        break;
+      case 'COMPLETE':
+        this.setState({visibleTasks: this.state.tasks.filter(t => t.isDone )})
+        break;
+      case 'UNCOMPLETE':
+        this.setState({visibleTasks: this.state.tasks.filter(t => t.isDone === false)})
+    }
   }
 
-  showUncomplete = () => {
-    let tasks = this.state.tasks.concat();
-    let filteredTasks = tasks.filter(item => item.isDone === false);
-
-    this.setState({
-      visibleTasks: filteredTasks
-    })
-   
-  }
-  showAll = () => {
-    this.setState({
-      visibleTasks: this.state.tasks.concat()
-    })
-  }
   render() {
     return (
       <div className="App">
@@ -109,9 +84,9 @@ class App extends Component {
       <br/>
       <br/>      
 
-      <button onClick={this.showComplete}>Show complete tasks</button>
-      <button onClick={this.showUncomplete}>Show uncomplete tasks</button>
-      <button onClick={this.showAll}>Show all</button>
+      <button onClick={() => {this.filterTasks('ALL')}}>Show all</button>
+      <button onClick={() => {this.filterTasks('COMPLETE')}}>Show complete tasks</button>
+      <button onClick={() => {this.filterTasks('UNCOMPLETE')}}>Show uncomplete tasks</button>
             
       <br/>
       <br/>      
@@ -146,7 +121,16 @@ class App extends Component {
       <br/>
       <br/>      
 
-      {this.renderTaskList()}
+      {this.state.visibleTasks.map(item =>
+        <Task
+            key={item._id}
+            id={item._id}            
+            title={item.title}
+            date={item.date}
+            importance={item.importance}
+            isDone={item.isDone}
+          />
+      )}
       
       </div>
     );

@@ -50,9 +50,7 @@ export default class Task extends Component {
     }
 
     deleteTask = () => {
-        console.log(this.props.id);
         fb.database().ref('/tasks/' + this.props.id).remove()
-
     }
 
     toggleCompleteTask = () => {
