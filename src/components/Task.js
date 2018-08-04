@@ -41,12 +41,17 @@ export default class Task extends Component {
         }
     }
 
+    deleteTask = () => {
+        console.log(this.props.id);
+    }
     render() {
         return (
             <div>
                 <div>{this.props.title} by {this.props.date.toLowerCase()}</div>
                 <div>Importance level: {this.showImportanceLevel(this.state.importance)}</div>
                 <div>{this.props.isDone ? "Complete" : "Not complete"}</div>
+
+                <button onClick={this.deleteTask}>Delete</button>
                 <button onClick={this.increaseImportance}>+</button>
                 <button onClick={this.decreaseImportance}>-</button>
                 <br/>

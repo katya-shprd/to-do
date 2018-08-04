@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Task from './components/Task';
+import { fb } from './api/firebase';
+
 
 class App extends Component {
   constructor(props) {
@@ -10,16 +12,23 @@ class App extends Component {
       description: '',
       importance: '',
       tasks: [
-        {id: '1234', title: 'Learn React', date: 'Tomorrow', importance: 2, isDone: true},
-        {id: '12345', title: 'Learn Firebase', date: '2 days', importance: 1, isDone: false},
-        {id: '123456', title: 'Kiss Chipi', date: 'today', importance: 0, isDone: true}
+        
       ],
       visibleTasks: [
-        {id: '1234', title: 'Learn React', date: 'Tomorrow', importance: 2, isDone: true},
-        {id: '12345', title: 'Learn Firebase', date: '2 days', importance: 1, isDone: false},
-        {id: '123456', title: 'Kiss Chipi', date: 'today', importance: 0, isDone: true}
+        
       ]
     }
+  }
+
+  componentDidMount() {
+    // Retrieves tasks from Firebase as an object
+    fb.database().ref('/tasks').on('value', (data) => {
+        console.log(data.toJSON())
+      let tasks = data.toJSON(); // Object with tasks from Firebase
+      let tasksArr = Object.values(tasks);
+      this.setState({tasks: tasksArr, visibleTasks: tasksArr})
+      // Now tasks are saved as an OBJECT and can be used in the app
+    })
   }
 
   renderTaskList = () => {
@@ -28,6 +37,7 @@ class App extends Component {
     let taskComponents = tasks.map(item =>
         <Task
             key={item.id}
+            id={item._id}            
             title={item.title}
             date={item.date}
             importance={item.importance}
@@ -46,20 +56,19 @@ class App extends Component {
 
   addTask = (e) => {
     e.preventDefault();
-    
-    let tasks = this.state.tasks.concat();
+
+    let ref = fb.database().ref('tasks/').push(); // push id = -LIzZ3G37W
+    let pushId = ref.key;
+
     let newTask = {
+      _id: pushId,
       title: this.state.title,
       date: this.state.date,
       importance: this.state.importance || 0,
       isDone: false
     }
-    tasks.push(newTask);
-    
-    this.setState({
-      tasks: tasks,
-      visibleTasks: tasks
-    })
+
+    ref.set(newTask)
   
   }
 
