@@ -62,7 +62,7 @@ export default class Task extends Component {
 
     render() {
         return (
-            <div>
+            <div style={styles.container}>
                 <div>{this.props.title} by {this.props.date.toLowerCase()}</div>
                 <div>Importance level: {this.showImportanceLevel(this.state.importance)}</div>
                 <div>{this.props.isDone ? "Complete" : "Not complete"}</div>
@@ -76,5 +76,12 @@ export default class Task extends Component {
                 
             </div>
         )
+    }
+}
+
+const styles = {
+    container: {
+        background: 'red',
+        padding: '32px 41px'
     }
 }
