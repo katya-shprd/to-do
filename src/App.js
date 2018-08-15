@@ -2,15 +2,19 @@ import React, { Component } from 'react';
 import Task from './components/Task';
 import { fb } from './api/firebase';
 
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import 'react-day-picker/lib/style.css';
 
 class App extends Component {
   constructor(props) {
     super(props);
+    this.handleDayClick = this.handleDayClick.bind(this);
     this.state = {
+      currentFilter: 'UNCOMPLETE',
       title: '',
       date: '',
       description: '',
-      importance: '',
+      importance: '0',
       tasks: [],
       visibleTasks: []
     }
@@ -18,6 +22,13 @@ class App extends Component {
 
   componentDidMount() {
     this.getTasksFromDatabase()
+  }
+
+  handleDayClick(day) {
+
+    this.setState({ date: day.toLocaleDateString() }, () => {
+      
+    });
   }
 
   getTasksFromDatabase = () => {
@@ -53,6 +64,8 @@ class App extends Component {
       isDone: false
     }
 
+
+
     ref.set(newTask)
 
     this.setState({
@@ -69,72 +82,136 @@ class App extends Component {
         this.setState({visibleTasks: this.state.tasks});
         break;
       case 'COMPLETE':
-        this.setState({visibleTasks: this.state.tasks.filter(t => t.isDone )})
+        this.setState({
+          currentFilter: 'COMPLETE',
+          visibleTasks: this.state.tasks.filter(t => t.isDone )})
         break;
       case 'UNCOMPLETE':
-        this.setState({visibleTasks: this.state.tasks.filter(t => t.isDone === false)})
+        this.setState({
+          currentFilter: 'UNCOMPLETE',          
+          visibleTasks: this.state.tasks.filter(t => t.isDone === false)})
     }
   }
 
   render() {
     return (
-      <div className="App">
+      <div style={styles.container}>
+        <div style={styles.formContainer}>      
+          <form style={styles.form}>
+
+            <div style={styles.formLabelLong}>
+              <h3>Name a new task</h3>
+              <input
+                style={styles.longInput}
+                autocomplete="off"
+                type="text"
+                name="title"
+                placeholder="New task"
+                value={this.state.title}
+                onChange={this.handleInputChange}
+                />
+            </div> 
+
+            <div style={styles.formLabelShort}>
+              <h3>Choose a date</h3>
+                <DayPickerInput
+                    onDayChange={this.handleDayClick}
+                    placeholder="DD.MM.YYYY"  
+                />
+            </div>
+
+            <div style={styles.formLabelShort}>          
+              <h3>Importance level</h3>
+              <select value={this.state.importance} name="importance" onChange={this.handleInputChange}>
+                <option value="0">Low</option>
+                <option value="1">Medium</option>
+                <option value="2">High</option>
+              </select>
+            </div>
+
+            <button style={styles.buttonAddTask} onClick={this.addTask}>Add</button>    
+          </form>
+        </div>  
+
+
+      <button
+        style={this.state.currentFilter === 'UNCOMPLETE' ? styles.activeTextSelected : styles.activeText}
+        onClick={() => {this.filterTasks('UNCOMPLETE')}}>Current tasks</button>
+
+      <button 
+        style={this.state.currentFilter === 'COMPLETE' ? styles.activeTextSelected : styles.activeText}      
+        onClick={() => {this.filterTasks('COMPLETE')}}>Finished tasks</button>
       
-      <br/>
-      <br/>
-      <br/>      
 
-      <button onClick={() => {this.filterTasks('ALL')}}>Show all</button>
-      <button onClick={() => {this.filterTasks('COMPLETE')}}>Show complete tasks</button>
-      <button onClick={() => {this.filterTasks('UNCOMPLETE')}}>Show uncomplete tasks</button>
-            
-      <br/>
-      <br/>      
-            
-      <form>
-        Title
-        <input
-          type="text"
-          name="title"
-          value={this.state.title}
-          onChange={this.handleInputChange}
-          />
-
-
-        Date
-        <input
-          type="text"
-          value={this.state.date}
-          name="date"
-          onChange={this.handleInputChange}/>
+      <div style={styles.taskContainer}>
         
-        Importance
-          <input
-          type="text"
-          value={this.state.importance}
-          name="importance"
-          onChange={this.handleInputChange}/>
-         
-        <button onClick={this.addTask}>Add Task</button>    
-      </form>
-
-      <br/>
-      <br/>      
-
-      {this.state.visibleTasks.map(item =>
-        <Task
-            key={item._id}
-            id={item._id}            
-            title={item.title}
-            date={item.date}
-            importance={item.importance}
-            isDone={item.isDone}
-          />
-      )}
-      
+        {this.state.visibleTasks.map(item =>
+          <Task
+              key={item._id}
+              id={item._id}            
+              title={item.title}
+              date={item.date}
+              importance={item.importance}
+              isDone={item.isDone}
+            />
+        )}
+       </div> 
       </div>
     );
   }
 }
+const styles = {
+  container: {},
+  formContainer: {
+    paddingBottom: '64px'
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-end'
+  },
+  formLabelLong: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: '3',
+    marginRight: '32px',    
+  },
+  formLabelShort: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: '1',
+    marginRight: '32px',    
+  },
+  buttonAddTask: {
+    background: '#F58241',
+    padding: '6px 48px',
+    borderRadius: '40px',
+    maxHeight: '41px',
+    lineHeight: '1.7',    
+    fontSize: '18px',
+    color: 'white',
+    fontWeight: '700',
+  },
+  taskContainer: {
+    maxHeight: '800px',
+    flexWrap: 'wrap',
+    flexDirection: 'column',
+    display: 'flex'
+  },
+  activeText: {
+    color: '#000',
+    marginRight: '45px',
+    fontWeight: '700',
+    fontFamily: 'Montserrat',
+    fontSize: '18px',
+  },
+  activeTextSelected: {
+    color: '#F58241',
+    marginRight: '45px',
+    fontWeight: '700',
+    fontFamily: 'Montserrat',
+    fontSize: '18px',
+  },
 
+}
 export default App;

@@ -1,3 +1,9 @@
+:root {
+  --grey-color: #C4C4C4;
+  --title-font: 'Montserrat', sans-serif;
+  --body-font: 'Open Sans', sans-serif;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -5,4 +11,91 @@ body {
 }
 *, *:after, *:before {
   box-sizing: border-box;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  border: 0;
+  font-weight: 700;
+  background: white;
+}
+
+
+body {
+  padding: 5%;
+}
+
+h1, h2, h3, {
+  font-family: var(--title-font);
+  
+}
+h2 {
+  margin: 0;
+  padding: 0;
+  font-size: 24px;
+  font-weight: 700;
+
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+h4 {
+  font-family: 'Montserrat';
+  font-weight: 400;
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.5);
+  text-align: right;
+  margin: 0;
+  padding: 0;
+
+
+}
+
+span, p, input, select {
+  font-family: var(--body-font);
+}
+
+input {
+  padding: 6px 24px ;
+  border: 1px solid var(--grey-color);
+  line-height: 1.7;
+  font-size: 18px;
+  max-height: 41px;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: 6px 24px ;
+  border: 1px solid var(--grey-color);
+  line-height: 1.7;
+  font-size: 18px;
+  max-height: 41px;
+  background: white;
+  border-radius: 0;
+}
+
+::placeholder {
+  color: var(--grey-color);
+  font-size: 18px;
+}
+.card:hover {
+  box-shadow: 0px 9px 18px rgba(0, 0, 0, 0.12);
+}
+
+
+.importanceBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 118px;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
 }
